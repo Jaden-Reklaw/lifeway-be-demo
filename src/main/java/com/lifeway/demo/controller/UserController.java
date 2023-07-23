@@ -1,5 +1,6 @@
 package com.lifeway.demo.controller;
 
+import com.lifeway.demo.dto.UserUpdateRequestDTO;
 import com.lifeway.demo.model.User;
 import com.lifeway.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,26 +22,42 @@ public class UserController {
 
         List<User> allUsers = userService.getAllUsers();
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(allUsers);
+        return ResponseEntity.status(HttpStatus.OK).body(allUsers);
     }
 
     @GetMapping("/{id}")
-    public String getUserById(@PathVariable Long id) {
-        return "Getting User By Id: " + id;
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+
+        User user = userService.getUserById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @PostMapping
-    public String createNewUser() {
-        return "Creating new user!";
+    public ResponseEntity<User> createNewUser(@RequestBody User user) {
+
+        User createdUser = userService.createNewUser(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PutMapping("/{id}")
-    public String updateUserById(@PathVariable Long id) {
-        return "Updating user by Id: " + id;
+    public ResponseEntity<User> updateUserById(@PathVariable Long id, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+
+        User updatedUser = userService.updateUserById(id, userUpdateRequestDTO);
+
+        if(updatedUser != null) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUserById(@PathVariable Long id) {
-        return "Deleting user by Id: " + id;
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+
+        userService.deleteUserById(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
