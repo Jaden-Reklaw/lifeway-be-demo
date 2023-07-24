@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -30,15 +32,25 @@ public class UserController {
 
         User user = userService.getUserById(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        if(user != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PostMapping
-    public ResponseEntity<User> createNewUser(@RequestBody User user) {
+    public ResponseEntity<Void> createNewUser(@RequestBody User user) {
 
         User createdUser = userService.createNewUser(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdUser.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}")
@@ -47,9 +59,9 @@ public class UserController {
         User updatedUser = userService.updateUserById(id, userUpdateRequestDTO);
 
         if(updatedUser != null) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUser);
+            return ResponseEntity.ok().body(updatedUser);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

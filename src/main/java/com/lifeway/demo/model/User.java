@@ -28,7 +28,7 @@ public class User {
     private String lastName;
 
     @Column(unique = true, updatable = false)
-    @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]+$", message = "Invalid characters in username")
+    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Username can only contain letters and numbers.")
     @NotBlank(message = "Username is required")
     private String username;
 
